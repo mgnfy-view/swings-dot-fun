@@ -11,4 +11,5 @@ pub struct PlatformConfig {
     pub target_wsol_amount: u64,
     pub migration_fee: u64,
     pub bump: u8,
+    pub platform_wsol_token_account_bump: u8,
 }

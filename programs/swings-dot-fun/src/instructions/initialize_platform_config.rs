@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::{utils::*, PlatformConfig};
 
@@ -16,7 +17,23 @@ pub struct InitializePlatformConfig<'info> {
     )]
     pub platform_config: Account<'info, PlatformConfig>,
 
+    #[account(
+        address = utils::convert_str_to_pubkey(constants::general::WSOL_MINT_ACCOUNT)
+    )]
+    pub wsol_mint: Account<'info, Mint>,
+
+    #[account(
+        init,
+        payer = owner,
+        seeds = [constants::seeds::PLATFORM_WSOL_TOKEN_ACCOUNT],
+        bump,
+        token::mint = wsol_mint,
+        token::authority = platform_wsol_token_account,
+    )]
+    pub platform_wsol_token_account: Account<'info, TokenAccount>,
+
     pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
 }
 
 impl InitializePlatformConfig<'_> {
@@ -50,6 +67,7 @@ impl InitializePlatformConfig<'_> {
         platform_config.target_wsol_amount = platform_config_init_params.target_wsol_amount;
         platform_config.migration_fee = platform_config_init_params.migration_fee;
         platform_config.bump = ctx.bumps.platform_config;
+        platform_config.platform_wsol_token_account_bump = ctx.bumps.platform_wsol_token_account;
 
         Ok(())
     }

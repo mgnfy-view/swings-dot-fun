@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{platform_config, utils::*, PlatformConfig};
+use crate::{utils::*, PlatformConfig};
 
 #[derive(Accounts)]
 pub struct SetPlatformConfig<'info> {

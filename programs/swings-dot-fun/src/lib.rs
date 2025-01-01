@@ -79,4 +79,12 @@ pub mod swings_dot_fun {
 
         Ok(())
     }
+
+    pub fn withdraw_accumulated_wsol_fees(
+        mut ctx: Context<WithdrawAccumulatedWsolFees>,
+    ) -> Result<()> {
+        instructions::WithdrawAccumulatedWsolFees::withdraw_accumulated_wsol_fees(&mut ctx);
+
+        Ok(())
+    }
 }
