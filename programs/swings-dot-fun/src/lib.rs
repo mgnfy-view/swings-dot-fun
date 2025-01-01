@@ -25,4 +25,58 @@ pub mod swings_dot_fun {
 
         Ok(())
     }
+
+    pub fn set_owner(mut ctx: Context<SetPlatformConfig>, new_owner: Pubkey) -> Result<()> {
+        instructions::SetPlatformConfig::set_owner(&mut ctx, new_owner)?;
+
+        Ok(())
+    }
+
+    pub fn set_trading_fee_in_bps(
+        mut ctx: Context<SetPlatformConfig>,
+        new_trading_fee_in_bps: u16,
+    ) -> Result<()> {
+        instructions::SetPlatformConfig::set_trading_fee_in_bps(&mut ctx, new_trading_fee_in_bps)?;
+
+        Ok(())
+    }
+
+    pub fn set_token_total_supply(
+        mut ctx: Context<SetPlatformConfig>,
+        new_token_total_supply: u64,
+    ) -> Result<()> {
+        instructions::SetPlatformConfig::set_token_total_supply(&mut ctx, new_token_total_supply)?;
+
+        Ok(())
+    }
+
+    pub fn set_virtual_wsol_amount(
+        mut ctx: Context<SetPlatformConfig>,
+        new_virtual_wsol_amount: u64,
+    ) -> Result<()> {
+        instructions::SetPlatformConfig::set_virtual_wsol_amount(
+            &mut ctx,
+            new_virtual_wsol_amount,
+        )?;
+
+        Ok(())
+    }
+
+    pub fn set_target_wsol_amount(
+        mut ctx: Context<SetPlatformConfig>,
+        new_target_wsol_amount: u64,
+    ) -> Result<()> {
+        instructions::SetPlatformConfig::set_virtual_wsol_amount(&mut ctx, new_target_wsol_amount)?;
+
+        Ok(())
+    }
+
+    pub fn set_migration_fee(
+        mut ctx: Context<SetPlatformConfig>,
+        new_migration_fee: u64,
+    ) -> Result<()> {
+        instructions::SetPlatformConfig::set_migration_fee(&mut ctx, new_migration_fee)?;
+
+        Ok(())
+    }
 }

@@ -49,6 +49,7 @@ impl InitializePlatformConfig<'_> {
         platform_config.virtual_wsol_amount = platform_config_init_params.virtual_wsol_amount;
         platform_config.target_wsol_amount = platform_config_init_params.target_wsol_amount;
         platform_config.migration_fee = platform_config_init_params.migration_fee;
+        platform_config.bump = ctx.bumps.platform_config;
 
         Ok(())
     }

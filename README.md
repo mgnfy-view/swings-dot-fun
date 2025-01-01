@@ -52,7 +52,7 @@
 
 ## About The Project
 
-Swings.fun is austom implementation of a memecoin launchpad on Solana
+Swings.fun is a custom implementation of a memecoin launchpad on Solana
 
 ### Built With
 

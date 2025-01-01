@@ -10,4 +10,5 @@ pub struct PlatformConfig {
     pub virtual_wsol_amount: u64,
     pub target_wsol_amount: u64,
     pub migration_fee: u64,
+    pub bump: u8,
 }
