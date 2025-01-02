@@ -10,10 +10,6 @@ describe("swings-dot-fun", () => {
 
     before(async () => {
         await initializeProgram();
-
-        const platformConfig = await program.account.platformConfig.fetch(
-            pda.getPlatformConfig(program.programId)
-        );
     });
 
     it("Should create token and bonding curve", async () => {
@@ -22,9 +18,12 @@ describe("swings-dot-fun", () => {
             symbol: "PORTAL",
             uri: "https://github.com/mgnfy-view/portal.git",
         };
+
+        const platformConfig = pda.getPlatformConfig(program.programId);
         const mint = pda.getMint(createTokenAndBondingCurveParams.name, program.programId);
-        const bondingCurvePublicKey = pda.getBondingCurve(mint, program.programId);
-        const bondingCurveMintTokenAccountPublicKey = pda.getBondingCurveMintTokenAccount(
+        const metadata = pda.getMetadata(mint);
+        const bondingCurve = pda.getBondingCurve(mint, program.programId);
+        const bondingCurveMintTokenAccount = pda.getBondingCurveMintTokenAccount(
             mint,
             program.programId
         );
@@ -32,70 +31,70 @@ describe("swings-dot-fun", () => {
         await program.methods
             .createTokenAndBondingCurve(createTokenAndBondingCurveParams)
             .accounts({
-                platformConfig: pda.getPlatformConfig(program.programId),
+                platformConfig,
                 creator: owner.publicKey,
                 mint,
-                metadata: pda.getMetadata(mint),
-                bondingCurve: bondingCurvePublicKey,
-                bondingCurveMintTokenAccount: bondingCurveMintTokenAccountPublicKey,
+                metadata,
+                bondingCurve,
+                bondingCurveMintTokenAccount,
                 tokenMetadataProgram,
             })
             .rpc();
 
-        const bondingCurve = await program.account.bondingCurve.fetch(bondingCurvePublicKey);
-        const platformConfig = await program.account.platformConfig.fetch(
+        const bondingCurveAccount = await program.account.bondingCurve.fetch(bondingCurve);
+        const platformConfigAccount = await program.account.platformConfig.fetch(
             pda.getPlatformConfig(program.programId)
         );
 
-        assert.equal(bondingCurve.creator.toString(), owner.publicKey.toString());
-        assert.equal(bondingCurve.token.toString(), mint.toString());
+        assert.equal(bondingCurveAccount.creator.toString(), owner.publicKey.toString());
+        assert.equal(bondingCurveAccount.token.toString(), mint.toString());
         assert.equal(
-            bondingCurve.tokenTotalSupply.toNumber(),
-            platformConfig.tokenTotalSupply.toNumber()
+            bondingCurveAccount.tokenTotalSupply.toNumber(),
+            platformConfigAccount.tokenTotalSupply.toNumber()
         );
         assert.equal(
-            bondingCurve.virtualWsolAmount.toNumber(),
-            platformConfig.virtualWsolAmount.toNumber()
+            bondingCurveAccount.virtualWsolAmount.toNumber(),
+            platformConfigAccount.virtualWsolAmount.toNumber()
         );
         assert.equal(
-            bondingCurve.targetWsolAmount.toNumber(),
-            platformConfig.targetWsolAmount.toNumber()
+            bondingCurveAccount.targetWsolAmount.toNumber(),
+            platformConfigAccount.targetWsolAmount.toNumber()
         );
         assert.equal(
-            bondingCurve.currentTokenReserve.toNumber(),
-            platformConfig.tokenTotalSupply.toNumber()
+            bondingCurveAccount.currentTokenReserve.toNumber(),
+            platformConfigAccount.tokenTotalSupply.toNumber()
         );
         assert.equal(
-            bondingCurve.currentWsolReserve.toNumber(),
-            platformConfig.virtualWsolAmount.toNumber()
+            bondingCurveAccount.currentWsolReserve.toNumber(),
+            platformConfigAccount.virtualWsolAmount.toNumber()
         );
-        assert.isFalse(bondingCurve.launched);
-        assert(bondingCurve.bump >= 0 && bondingCurve.bump <= 255);
-        assert(bondingCurve.mintBump >= 0 && bondingCurve.mintBump <= 255);
+        assert.isFalse(bondingCurveAccount.launched);
+        assert(bondingCurveAccount.bump >= 0 && bondingCurveAccount.bump <= 255);
+        assert(bondingCurveAccount.mintBump >= 0 && bondingCurveAccount.mintBump <= 255);
         assert(
-            bondingCurve.bondingCurveMintTokenAccountBump >= 0 &&
-                bondingCurve.bondingCurveMintTokenAccountBump <= 255
+            bondingCurveAccount.bondingCurveMintTokenAccountBump >= 0 &&
+                bondingCurveAccount.bondingCurveMintTokenAccountBump <= 255
         );
 
         const mintAccount = await spl.getMint(provider.connection, mint);
 
         assert.isTrue(mintAccount.isInitialized);
         assert.equal(mintAccount.decimals, decimals);
-        assert.equal(mintAccount.mintAuthority.toString(), bondingCurvePublicKey.toString());
+        assert.equal(mintAccount.mintAuthority.toString(), bondingCurve.toString());
+        assert.equal(Number(mintAccount.supply), platformConfigAccount.tokenTotalSupply.toNumber());
 
-        const bondingCurveMintTokenAccount = await spl.getAccount(
+        const bondingCurveMintTokenAccountData = await spl.getAccount(
             provider.connection,
-            bondingCurveMintTokenAccountPublicKey
+            bondingCurveMintTokenAccount
         );
 
-        assert.isTrue(bondingCurveMintTokenAccount.isInitialized);
+        assert.isTrue(bondingCurveMintTokenAccountData.isInitialized);
+        assert.equal(bondingCurveMintTokenAccountData.mint.toString(), mint.toString());
         assert.equal(
             Number(
-                (await spl.getAccount(provider.connection, bondingCurveMintTokenAccountPublicKey))
-                    .amount
+                (await spl.getAccount(provider.connection, bondingCurveMintTokenAccount)).amount
             ),
-            platformConfig.tokenTotalSupply.toNumber()
+            platformConfigAccount.tokenTotalSupply.toNumber()
         );
-        assert.equal(bondingCurveMintTokenAccount.mint.toString(), mint.toString());
     });
 });
