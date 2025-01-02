@@ -15,10 +15,11 @@ cluster = "Localnet"
 wallet = "/home/sahil/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/createTokenAndBondingCurve.test.ts" # Current test suite in progress, run directly with `anchor test` for convenience
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/buyTokens.test.ts" # Current test suite in progress, run directly with `anchor test` for convenience
 # Test suites that can be run by executing `anchor localnet` in another terminal, and 
 test_initialization = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/initialization.test.ts"
 test_set_platform_config = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/setPlatformConfig.test.ts"
+test_create_token_and_bonding_curve = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/createTokenAndBondingCurve.test.ts"
 
 
 [[test.genesis]]

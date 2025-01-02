@@ -68,4 +68,28 @@ const initializeProgram = async () => {
         .rpc();
 };
 
-export { pda, getPlatformConfigInitParams, initializeProgram };
+const createTokenAndBondingCurve = async (name: string, symbol: string, uri: string) => {
+    const { owner, program } = setup();
+
+    const mint = pda.getMint(name, program.programId);
+    const bondingCurvePublicKey = pda.getBondingCurve(mint, program.programId);
+    const bondingCurveMintTokenAccountPublicKey = pda.getBondingCurveMintTokenAccount(
+        mint,
+        program.programId
+    );
+
+    await program.methods
+        .createTokenAndBondingCurve({ name, symbol, uri })
+        .accounts({
+            platformConfig: pda.getPlatformConfig(program.programId),
+            creator: owner.publicKey,
+            mint,
+            metadata: pda.getMetadata(mint),
+            bondingCurve: bondingCurvePublicKey,
+            bondingCurveMintTokenAccount: bondingCurveMintTokenAccountPublicKey,
+            tokenMetadataProgram,
+        })
+        .rpc();
+};
+
+export { pda, getPlatformConfigInitParams, initializeProgram, createTokenAndBondingCurve };

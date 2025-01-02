@@ -99,4 +99,14 @@ pub mod swings_dot_fun {
 
         Ok(())
     }
+
+    pub fn buy_tokens(
+        mut ctx: Context<BuyTokens>,
+        token_name: String,
+        wsol_amount: u64,
+    ) -> Result<()> {
+        instructions::BuyTokens::buy_tokens(&mut ctx, token_name, wsol_amount)?;
+
+        Ok(())
+    }
 }
