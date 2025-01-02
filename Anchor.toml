@@ -21,7 +21,21 @@ test_initialization = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/ini
 test_set_platform_config = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/setPlatformConfig.test.ts"
 test_create_token_and_bonding_curve = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/createTokenAndBondingCurve.test.ts"
 
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"
 
 [[test.genesis]]
-address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-program = "./dumped-programs/token_metadata_program.so"
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" # Token metadata program
+program = "./dump/programs/token_metadata_program.so"
+
+[[test.genesis]]
+address = "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C" # Raydium V5 program
+program = "./dump/programs/raydium_cp_swap.so"
+
+[[test.validator.account]]
+address = "DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8" # Pool fee receiver
+filename = "./dump/accounts/pool_fee_receiver.json"
+
+[[test.validator.account]]
+address = "D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2" # AMM config
+filename = "./dump/accounts/amm_config.json"

@@ -45,7 +45,6 @@ pub struct BuyTokens<'info> {
             _token_name.as_bytes()
         ],
         bump = bonding_curve.mint_bump,
-        mint::decimals = constants::general::TOKEN_DECIMALS,
         mint::authority = bonding_curve
     )]
     pub mint: Box<Account<'info, Mint>>,

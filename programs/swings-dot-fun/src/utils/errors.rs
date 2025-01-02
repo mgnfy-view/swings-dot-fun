@@ -10,4 +10,6 @@ pub enum CustomErrors {
     InvalidPlatformConfigParams,
     #[msg("Bonding filled")]
     BondingCurveFilled,
+    #[msg("Bonding curve not filled yet")]
+    BondingCurveNotFilledYet,
 }
