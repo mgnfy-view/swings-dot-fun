@@ -52,7 +52,7 @@ impl SetPlatformConfig<'_> {
         ctx: &mut Context<SetPlatformConfig>,
         new_virtual_wsol_amount: u64,
     ) -> Result<()> {
-        let platform_config = &mut ctx.accounts.platform_config;
+        let platform_config = &ctx.accounts.platform_config;
 
         require!(new_virtual_wsol_amount > 0, errors::CustomErrors::ValueZero);
         require!(
@@ -61,7 +61,7 @@ impl SetPlatformConfig<'_> {
             errors::CustomErrors::InvalidPlatformConfigParams
         );
 
-        platform_config.virtual_wsol_amount = new_virtual_wsol_amount;
+        ctx.accounts.platform_config.virtual_wsol_amount = new_virtual_wsol_amount;
 
         Ok(())
     }
@@ -70,7 +70,7 @@ impl SetPlatformConfig<'_> {
         ctx: &mut Context<SetPlatformConfig>,
         new_target_wsol_amount: u64,
     ) -> Result<()> {
-        let platform_config = &mut ctx.accounts.platform_config;
+        let platform_config = &ctx.accounts.platform_config;
 
         require!(new_target_wsol_amount > 0, errors::CustomErrors::ValueZero);
         require!(
@@ -79,7 +79,7 @@ impl SetPlatformConfig<'_> {
             errors::CustomErrors::InvalidPlatformConfigParams
         );
 
-        platform_config.target_wsol_amount = new_target_wsol_amount;
+        ctx.accounts.platform_config.target_wsol_amount = new_target_wsol_amount;
 
         Ok(())
     }
@@ -88,7 +88,7 @@ impl SetPlatformConfig<'_> {
         ctx: &mut Context<SetPlatformConfig>,
         new_migration_fee: u64,
     ) -> Result<()> {
-        let platform_config = &mut ctx.accounts.platform_config;
+        let platform_config = &ctx.accounts.platform_config;
 
         require!(new_migration_fee > 0, errors::CustomErrors::ValueZero);
         require!(
@@ -97,7 +97,7 @@ impl SetPlatformConfig<'_> {
             errors::CustomErrors::InvalidPlatformConfigParams
         );
 
-        platform_config.migration_fee = new_migration_fee;
+        ctx.accounts.platform_config.migration_fee = new_migration_fee;
 
         Ok(())
     }

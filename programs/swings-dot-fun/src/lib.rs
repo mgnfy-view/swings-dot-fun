@@ -66,7 +66,7 @@ pub mod swings_dot_fun {
         mut ctx: Context<SetPlatformConfig>,
         new_target_wsol_amount: u64,
     ) -> Result<()> {
-        instructions::SetPlatformConfig::set_virtual_wsol_amount(&mut ctx, new_target_wsol_amount)?;
+        instructions::SetPlatformConfig::set_target_wsol_amount(&mut ctx, new_target_wsol_amount)?;
 
         Ok(())
     }
@@ -83,7 +83,19 @@ pub mod swings_dot_fun {
     pub fn withdraw_accumulated_wsol_fees(
         mut ctx: Context<WithdrawAccumulatedWsolFees>,
     ) -> Result<()> {
-        instructions::WithdrawAccumulatedWsolFees::withdraw_accumulated_wsol_fees(&mut ctx);
+        instructions::WithdrawAccumulatedWsolFees::withdraw_accumulated_wsol_fees(&mut ctx)?;
+
+        Ok(())
+    }
+
+    pub fn create_token_and_bonding_curve(
+        mut ctx: Context<CreateTokenAndBondingCurve>,
+        create_token_and_bonding_curve_params: CreateTokenAndBondingCurveParams,
+    ) -> Result<()> {
+        instructions::CreateTokenAndBondingCurve::create_token_and_bonding_curve(
+            &mut ctx,
+            create_token_and_bonding_curve_params,
+        )?;
 
         Ok(())
     }

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-#[account()]
+#[account]
 #[derive(InitSpace)]
 pub struct PlatformConfig {
     pub owner: Pubkey,
