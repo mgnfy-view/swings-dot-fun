@@ -10,7 +10,6 @@ pub fn convert_str_to_pubkey(str: &str) -> Pubkey {
 pub fn calculate_amount_out(amount_in: &u128, reserve_in: &u128, reserve_out: &u128) -> u64 {
     ((amount_in * reserve_out) / (amount_in + reserve_in)) as u64
 }
-// 50e9 * 100e9 / 50e9 + 100e9
 
 pub fn calculate_fee_amount(amount: &u128, trading_fee_in_bps: &u128) -> u64 {
     ((amount * trading_fee_in_bps) / BPS as u128) as u64

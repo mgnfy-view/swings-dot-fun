@@ -109,4 +109,14 @@ pub mod swings_dot_fun {
 
         Ok(())
     }
+
+    pub fn sell_tokens(
+        mut ctx: Context<SellTokens>,
+        token_name: String,
+        token_amount: u64,
+    ) -> Result<()> {
+        instructions::SellTokens::sell_tokens(&mut ctx, token_name, token_amount)?;
+
+        Ok(())
+    }
 }

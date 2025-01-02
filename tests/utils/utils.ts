@@ -1,4 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
+import * as spl from "@solana/spl-token";
 import { setup } from "./setup";
 
 import { wsolMint, tokenMetadataProgram, seeds } from "./constants";
@@ -48,7 +49,7 @@ const getPlatformConfigInitParams = (owner: anchor.web3.PublicKey) => {
         tradingFeeInBps: 100,
         tokenTotalSupply: new anchor.BN(100e9),
         virtualWsolAmount: new anchor.BN(100e9),
-        targetWsolAmount: new anchor.BN(150e9),
+        targetWsolAmount: new anchor.BN(200e9),
         migrationFee: new anchor.BN(2e9),
     };
 };
@@ -92,4 +93,38 @@ const createTokenAndBondingCurve = async (name: string, symbol: string, uri: str
         .rpc();
 };
 
-export { pda, getPlatformConfigInitParams, initializeProgram, createTokenAndBondingCurve };
+const buyTokens = async (name: string, wsolAmount: anchor.BN) => {
+    const { owner, program } = setup();
+
+    const platformConfig = pda.getPlatformConfig(program.programId);
+    const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);
+    const mint = pda.getMint(name, program.programId);
+    const bondingCurve = pda.getBondingCurve(mint, program.programId);
+    const bondingCurveMintTokenAccount = pda.getBondingCurveMintTokenAccount(
+        mint,
+        program.programId
+    );
+    const buyerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
+
+    await program.methods
+        .buyTokens(name, wsolAmount)
+        .accounts({
+            buyer: owner.publicKey,
+            platformConfig,
+            wsolMint,
+            platformWsolTokenAccount,
+            mint,
+            bondingCurve,
+            bondingCurveMintTokenAccount,
+            buyerMintTokenAccount,
+        })
+        .rpc();
+};
+
+export {
+    pda,
+    getPlatformConfigInitParams,
+    initializeProgram,
+    createTokenAndBondingCurve,
+    buyTokens,
+};

@@ -59,9 +59,9 @@ describe("swings-dot-fun", () => {
     });
 
     it("Buying tokens succeeds", async () => {
-        const wsolAmount = new anchor.BN(50e9);
-        const feeAmount = 50e7;
-        const tokenAmountOut = 66666666667;
+        const wsolAmount = new anchor.BN(100e9);
+        const feeAmount = 1e9;
+        const tokenAmountOut = 50e9;
 
         const platformConfig = pda.getPlatformConfig(program.programId);
         const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);
@@ -112,9 +112,7 @@ describe("swings-dot-fun", () => {
     });
 
     it("Buying tokens fails if the bonding curve has been filled", async () => {
-        const wsolAmount = new anchor.BN(50e9);
-        const feeAmount = 50e7;
-        const tokenAmountOut = 66666666667;
+        const wsolAmount = new anchor.BN(100e9);
 
         const platformConfig = pda.getPlatformConfig(program.programId);
         const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);

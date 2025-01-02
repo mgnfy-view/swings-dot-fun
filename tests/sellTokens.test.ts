@@ -3,7 +3,7 @@ import * as spl from "@solana/spl-token";
 import { assert } from "chai";
 
 import { errors, wsolMint } from "./utils/constants";
-import { pda, initializeProgram, createTokenAndBondingCurve } from "./utils/utils";
+import { pda, initializeProgram, createTokenAndBondingCurve, buyTokens } from "./utils/utils";
 import { setup } from "./utils/setup";
 
 describe("swings-dot-fun", () => {
@@ -22,10 +22,12 @@ describe("swings-dot-fun", () => {
             createTokenAndBondingCurveParams.symbol,
             createTokenAndBondingCurveParams.uri
         );
+        const wsolAmount = new anchor.BN(10e9);
+        await buyTokens(createTokenAndBondingCurveParams.name, wsolAmount);
     });
 
-    it("Buying tokens fails if wsol amount is 0", async () => {
-        const wsolAmount = new anchor.BN(0);
+    it("Selling tokens fails if token amount is 0", async () => {
+        const tokenAmount = new anchor.BN(0);
 
         const platformConfig = pda.getPlatformConfig(program.programId);
         const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);
@@ -35,20 +37,25 @@ describe("swings-dot-fun", () => {
             mint,
             program.programId
         );
-        const buyerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
+        const sellerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
+        const sellerWsolTokenAccount = await spl.getAssociatedTokenAddress(
+            wsolMint,
+            owner.publicKey
+        );
 
         try {
             await program.methods
-                .buyTokens(createTokenAndBondingCurveParams.name, wsolAmount)
+                .sellTokens(createTokenAndBondingCurveParams.name, tokenAmount)
                 .accounts({
-                    buyer: owner.publicKey,
+                    seller: owner.publicKey,
                     platformConfig,
                     wsolMint,
                     platformWsolTokenAccount,
                     mint,
                     bondingCurve,
                     bondingCurveMintTokenAccount,
-                    buyerMintTokenAccount,
+                    sellerMintTokenAccount,
+                    sellerWsolTokenAccount,
                 })
                 .rpc();
         } catch (err) {
@@ -58,10 +65,8 @@ describe("swings-dot-fun", () => {
         }
     });
 
-    it("Buying tokens succeeds", async () => {
-        const wsolAmount = new anchor.BN(50e9);
-        const feeAmount = 50e7;
-        const tokenAmountOut = 66666666667;
+    it("Selling tokens succeeds", async () => {
+        const tokenAmount = new anchor.BN(1e9);
 
         const platformConfig = pda.getPlatformConfig(program.programId);
         const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);
@@ -71,42 +76,51 @@ describe("swings-dot-fun", () => {
             mint,
             program.programId
         );
-        const buyerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
+        const sellerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
+        const sellerWsolTokenAccount = await spl.getAssociatedTokenAddress(
+            wsolMint,
+            owner.publicKey
+        );
 
         await program.methods
-            .buyTokens(createTokenAndBondingCurveParams.name, wsolAmount)
+            .sellTokens(createTokenAndBondingCurveParams.name, tokenAmount)
             .accounts({
-                buyer: owner.publicKey,
+                seller: owner.publicKey,
                 platformConfig,
                 wsolMint,
                 platformWsolTokenAccount,
                 mint,
                 bondingCurve,
                 bondingCurveMintTokenAccount,
-                buyerMintTokenAccount,
+                sellerMintTokenAccount,
+                sellerWsolTokenAccount,
             })
             .rpc();
 
-        const platformConfigAccount = await program.account.platformConfig.fetch(platformConfig);
-        const platformWsolTokenAccountBalance = Number(
-            (await spl.getAccount(provider.connection, platformWsolTokenAccount)).amount
-        );
+        // const platformConfigAccount = await program.account.platformConfig.fetch(platformConfig);
+        // const platformWsolTokenAccountBalance = Number(
+        //     (await spl.getAccount(provider.connection, platformWsolTokenAccount)).amount
+        // );
 
-        assert.equal(platformConfigAccount.accumulatedWsolFees.toNumber(), feeAmount);
-        assert.equal(platformWsolTokenAccountBalance, wsolAmount.toNumber() + feeAmount);
+        // assert.equal(
+        //     platformConfigAccount.accumulatedWsolFees.toNumber(),
+        //     expectedAccumulatedWsolFeeAmount
+        // );
+        // assert.equal(platformWsolTokenAccountBalance, wsolAmount.toNumber() + ex);
 
-        const bondingCurveAccount = await program.account.bondingCurve.fetch(bondingCurve);
+        // const bondingCurveAccount = await program.account.bondingCurve.fetch(bondingCurve);
 
-        assert.equal(bondingCurveAccount.currentTokenReserve.toNumber(), tokenAmountOut);
-        assert.equal(
-            bondingCurveAccount.currentWsolReserve.toNumber(),
-            bondingCurveAccount.virtualWsolAmount.toNumber() + wsolAmount.toNumber()
-        );
+        // assert.equal(bondingCurveAccount.currentTokenReserve.toNumber(), tokenAmountOut);
+        // assert.equal(
+        //     bondingCurveAccount.currentWsolReserve.toNumber(),
+        //     bondingCurveAccount.virtualWsolAmount.toNumber() + wsolAmount.toNumber()
+        // );
+        // assert.isTrue(bondingCurveAccount.launched);
 
-        const buyerMintTokenAccountBalance = Number(
-            (await spl.getAccount(provider.connection, bondingCurveMintTokenAccount)).amount
-        );
+        // const buyerMintTokenAccountBalance = Number(
+        //     (await spl.getAccount(provider.connection, bondingCurveMintTokenAccount)).amount
+        // );
 
-        assert.equal(buyerMintTokenAccountBalance, tokenAmountOut);
+        // assert.equal(buyerMintTokenAccountBalance, tokenAmountOut);
     });
 });

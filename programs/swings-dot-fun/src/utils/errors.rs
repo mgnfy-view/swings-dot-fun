@@ -8,4 +8,6 @@ pub enum CustomErrors {
     InvalidFeeValueInBPs,
     #[msg("Invalid platform config params")]
     InvalidPlatformConfigParams,
+    #[msg("Bonding filled")]
+    BondingCurveFilled,
 }
