@@ -100,8 +100,8 @@ impl BuyTokens<'_> {
         );
         let token_amount_out = utils::calculate_amount_out(
             &(wsol_amount as u128),
-            &(bonding_curve.virtual_wsol_amount as u128),
-            &(bonding_curve.token_total_supply as u128),
+            &(bonding_curve.current_wsol_reserve as u128),
+            &(bonding_curve.current_token_reserve as u128),
         );
         require!(token_amount_out > 0, errors::CustomErrors::ValueZero);
 
