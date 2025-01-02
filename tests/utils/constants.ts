@@ -21,6 +21,7 @@ const errors = {
     valueZero: "Value zero",
     invalidFeeValueInBps: "Invalid fee value in bps",
     invalidPlatformConfigParams: "Invalid platform config params",
+    bondingCurveFilled: "Bonding filled",
 };
 
 export { wsolMint, tokenMetadataProgram, decimals, seeds, errors };

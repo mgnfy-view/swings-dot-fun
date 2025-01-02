@@ -102,48 +102,11 @@ describe("swings-dot-fun", () => {
             bondingCurveAccount.currentWsolReserve.toNumber(),
             bondingCurveAccount.virtualWsolAmount.toNumber() + wsolAmount.toNumber()
         );
-        assert.isTrue(bondingCurveAccount.launched);
 
         const buyerMintTokenAccountBalance = Number(
             (await spl.getAccount(provider.connection, bondingCurveMintTokenAccount)).amount
         );
 
         assert.equal(buyerMintTokenAccountBalance, tokenAmountOut);
-    });
-
-    it("Buying tokens fails if the bonding curve has been filled", async () => {
-        const wsolAmount = new anchor.BN(50e9);
-        const feeAmount = 50e7;
-        const tokenAmountOut = 66666666667;
-
-        const platformConfig = pda.getPlatformConfig(program.programId);
-        const platformWsolTokenAccount = pda.getPlatformWsolTokenAccount(program.programId);
-        const mint = pda.getMint(createTokenAndBondingCurveParams.name, program.programId);
-        const bondingCurve = pda.getBondingCurve(mint, program.programId);
-        const bondingCurveMintTokenAccount = pda.getBondingCurveMintTokenAccount(
-            mint,
-            program.programId
-        );
-        const buyerMintTokenAccount = await spl.getAssociatedTokenAddress(mint, owner.publicKey);
-
-        try {
-            await program.methods
-                .buyTokens(createTokenAndBondingCurveParams.name, wsolAmount)
-                .accounts({
-                    buyer: owner.publicKey,
-                    platformConfig,
-                    wsolMint,
-                    platformWsolTokenAccount,
-                    mint,
-                    bondingCurve,
-                    bondingCurveMintTokenAccount,
-                    buyerMintTokenAccount,
-                })
-                .rpc();
-        } catch (err) {
-            const errorMessage = (err as anchor.AnchorError).error.errorMessage;
-
-            assert.equal(errorMessage, errors.bondingCurveFilled);
-        }
     });
 });

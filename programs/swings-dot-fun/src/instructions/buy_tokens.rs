@@ -89,11 +89,21 @@ impl BuyTokens<'_> {
     pub fn buy_tokens(
         ctx: &mut Context<BuyTokens>,
         _token_name: String,
-        wsol_amount: u64,
+        mut wsol_amount: u64,
     ) -> Result<()> {
-        require!(wsol_amount > 0, errors::CustomErrors::ValueZero);
-
         let bonding_curve = &mut ctx.accounts.bonding_curve;
+
+        require!(wsol_amount > 0, errors::CustomErrors::ValueZero);
+        require!(
+            !bonding_curve.launched,
+            errors::CustomErrors::BondingCurveFilled
+        );
+
+        if bonding_curve.current_wsol_reserve + wsol_amount >= bonding_curve.target_wsol_amount {
+            wsol_amount = bonding_curve.target_wsol_amount - bonding_curve.current_wsol_reserve;
+            bonding_curve.launched = true;
+        }
+
         let fee_amount = utils::calculate_fee_amount(
             &(wsol_amount as u128),
             &(ctx.accounts.platform_config.trading_fee_in_bps as u128),
